@@ -23,15 +23,19 @@ SIGMA_MIN, SIGMA_MAX, SIGMA_N = 3e-3, 2, 5000  # relative to pi
 x = 10 ** np.linspace(np.log10(X_MIN), 0, X_N + 1) * np.pi
 sigma = 10 ** np.linspace(np.log10(SIGMA_MIN), np.log10(SIGMA_MAX), SIGMA_N + 1) * np.pi
 
-if os.path.exists('.p.npy'):
-    p_ = np.load('.p.npy')
-    score_ = np.load('.score.npy')
+p_path = os.path.join(os.path.dirname(__file__), ".p.npy")
+score_path = os.path.join(os.path.dirname(__file__), ".p.npy")
+if os.path.exists(p_path):
+    p_ = np.load(p_path)
+    score_ = np.load(score_path)
 else:
+    print("First time running torsional-diffusion...")
+    print("Computing p_ and score_ for future use...")
     p_ = p(x, sigma[:, None], N=100)
-    np.save('.p.npy', p_)
+    np.save(p_path, p_)
 
     score_ = grad(x, sigma[:, None], N=100) / p_
-    np.save('.score.npy', score_)
+    np.save(score_path, score_)
 
 
 def score(x, sigma):
